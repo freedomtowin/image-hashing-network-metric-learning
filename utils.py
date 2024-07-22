@@ -49,7 +49,7 @@ class ImageCollector():
                                                     batch_size=batch_size,
                                                     directory=base_dir,
                                                     shuffle=False,
-                                                    target_size=(IMG_SHAPE,IMG_SHAPE),class_mode='sparse'
+                                                    target_size=(IMG_SHAPE,IMG_SHAPE), class_mode='sparse'
                                                     )
         
         class_lkup = {v:k for k,v in data_gen.class_indices.items()}

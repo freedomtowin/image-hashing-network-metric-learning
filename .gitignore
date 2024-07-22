@@ -1,0 +1,13 @@
+__pycache__
+__pycache__/*
+actual
+actual/*
+.ipynb_checkpoints
+
+horse-or-human
+horse-or-human/*
+rps-test-set
+rps-test-set/*
+
+transformed
+transformed/*

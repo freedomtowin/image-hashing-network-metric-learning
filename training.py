@@ -4,15 +4,6 @@ import random
 import cv2 
 from tensorflow.python.framework import ops
 
-# @tf.function()
-# def tf_weight_mse(x1, x2, y):
-#     f1 = tf.keras.layers.Flatten()
-#     x1 = f1(x1)
-#     x1 = f1(x2)
-    
-#     loss = tf.reduce_mean((x2-x1)*(x2-x1)*y)
-#     return loss
-
 @tf.function()
 def tf_weight_mse(x1, x2, y):
     loss = tf.reduce_mean((x2-x1)*(x2-x1)*y)
@@ -36,12 +27,10 @@ class EmbeddingLayer(tf.keras.Model):
         c3 = self.c3(c2)
         m1 = self.m1(c3)
         c4 = self.c4(m1)
-        f1 = self.f1(m1)
+        f1 = self.f1(c4)
 
         return f1
     
-    
-
     
 class ImageMatcher(tf.keras.Model):
     def __init__(self,IMG_SHAPE,img_idx_to_base_idxs):
@@ -59,8 +48,8 @@ class ImageMatcher(tf.keras.Model):
         self.embeddings = EmbeddingLayer()
         output_1 = self.embeddings(input_1)
         output_2 = self.embeddings(input_2)
-        inputs = [input_1,input_2]
-        outputs = [output_1,output_2]
+        inputs = [input_1, input_2]
+        outputs = [output_1, output_2]
         self.model = tf.keras.Model(inputs,outputs)
         
     def get_anchor_pair(self):
@@ -69,14 +58,10 @@ class ImageMatcher(tf.keras.Model):
             random_class = random.choice(self.base_imgs)
 
             examples_for_class = list(self.img_idx_to_base_idxs[random_class])
-    #         print(examples_for_class,random_class)
             anchor_idx = random.choice(examples_for_class)
             positive_idx = random.choice(examples_for_class)
             if positive_idx==anchor_idx:
                 positive_idx = random.choice(examples_for_class)
-#             print(anchor_idx,positive_idx)
-    #         x[0] = cv2.imread(anchor_idx)
-    #         x[1] = cv2.imread(positive_idx)
 
             return cv2.imread(anchor_idx),cv2.imread(positive_idx),1.
         else:
@@ -87,7 +72,7 @@ class ImageMatcher(tf.keras.Model):
 
             examples_for_class_1 = list(self.img_idx_to_base_idxs[random_class_1])
             examples_for_class_2 = list(self.img_idx_to_base_idxs[random_class_2])
-    #         print(examples_for_class,random_class)
+
             anchor_idx = random.choice(examples_for_class_1)
             negative_idx = random.choice(examples_for_class_2)
             
@@ -104,15 +89,11 @@ class ImageMatcher(tf.keras.Model):
             X1[i] = img_1/255.
             X2[i] = img_2/255.
             Y[i] = y
-#         print(Y)
-#         if np.random.uniform()>0.3:
-#             img_1,img_2,wgt = next(iter(AnchorPositivePairs(num_batchs=1)))
-#         else:
-#             img_1,img_2,wgt = next(iter(AnchorNegativePairs(num_batchs=1)))
+
 
         with tf.GradientTape() as tape:
-                    # Run both anchors and positives through model.
-            anchors,positives = self.model([X1,X2])
+            # Run both anchors and positives through model.
+            anchors, positives = self.model([X1,X2])
             
             anchor_embeddings = anchors
             positive_embeddings = positives
